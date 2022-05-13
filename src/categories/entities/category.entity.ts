@@ -1,4 +1,4 @@
-import { Category } from 'src/categories/entities/category.entity';
+import { Note } from 'src/notes/entities/note.entity';
 import { User } from 'src/users/entities/user.entity';
 import {
   Column,
@@ -6,26 +6,24 @@ import {
   DeleteDateColumn,
   Entity,
   ManyToOne,
+  OneToMany,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
 
 @Entity()
-export class Note {
+export class Category {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @Column()
-  title: string;
+  @Column({ unique: true })
+  name: string;
 
-  @Column()
-  description: string;
+  @OneToMany(() => Note, (note) => note.category)
+  notes: Note[];
 
-  @ManyToOne(() => User, (user) => user.notes)
+  @ManyToOne(() => User, (user) => user.categories)
   user: User;
-
-  @ManyToOne(() => Category, (category) => category.notes)
-  category: Category;
 
   @CreateDateColumn()
   createdAt: Date;

@@ -18,6 +18,11 @@ export class UsersService {
     return savedUser;
   }
 
+  async findById(id: number) {
+    const user = await this.usersRepository.findOne({ where: { id } });
+    return user;
+  }
+
   async findByUsername(username: string) {
     const user = await this.usersRepository.findOne({ where: { username } });
     return user;

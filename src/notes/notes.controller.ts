@@ -6,18 +6,23 @@ import {
   Patch,
   Param,
   Delete,
+  Request,
+  UseGuards,
 } from '@nestjs/common';
 import { NotesService } from './notes.service';
 import { CreateNoteDto } from './dto/create-note.dto';
 import { UpdateNoteDto } from './dto/update-note.dto';
+import { AuthGuard } from '@nestjs/passport';
 
 @Controller('notes')
 export class NotesController {
   constructor(private notesService: NotesService) {}
 
+  @UseGuards(AuthGuard('jwt'))
   @Post()
-  create(@Body() createNoteDto: CreateNoteDto) {
-    return this.notesService.create(createNoteDto);
+  create(@Request() req, @Body() createNoteDto: CreateNoteDto) {
+    const userId = req.user.id;
+    return this.notesService.create(userId, createNoteDto);
   }
 
   @Get()
