@@ -8,6 +8,7 @@ import {
   Delete,
   Request,
   UseGuards,
+  Query,
 } from '@nestjs/common';
 import { NotesService } from './notes.service';
 import { CreateNoteDto } from './dto/create-note.dto';
@@ -25,9 +26,16 @@ export class NotesController {
     return this.notesService.create(userId, createNoteDto);
   }
 
+  @UseGuards(AuthGuard('jwt'))
   @Get()
-  findAll() {
-    return this.notesService.findAll();
+  async findAll(@Query('categoryId') categoryId: number, @Request() req) {
+    const userId = req.user.id;
+    if (categoryId) {
+      const notes = this.notesService.findManyByCategory(userId, categoryId);
+      return notes;
+    }
+    const notes = await this.notesService.findAll(userId);
+    return notes;
   }
 
   @Get(':id')

@@ -31,8 +31,22 @@ export class NotesService {
     return createdNote;
   }
 
-  async findAll() {
-    const notes = await this.notesRepository.find();
+  async findManyByCategory(userId: number, categoryId: number) {
+    const notes = await this.notesRepository
+      .createQueryBuilder('note')
+      .where('note.categoryId = :categoryId', { categoryId })
+      .andWhere('note.userId = :userId', { userId })
+      .getMany();
+    return notes;
+  }
+
+  async findAll(userId: number) {
+    const notes = await this.notesRepository
+      .createQueryBuilder('note')
+      .where('note.userId = :userId', {
+        userId,
+      })
+      .getMany();
     return notes;
   }
 
