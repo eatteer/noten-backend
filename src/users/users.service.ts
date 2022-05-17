@@ -1,6 +1,5 @@
-import { forwardRef, Inject, Injectable } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { CategoriesService } from 'src/categories/categories.service';
 import { Category } from 'src/categories/entities/category.entity';
 import { Repository } from 'typeorm';
 import { CreateUserDto } from './dto/create-user.dto';
@@ -11,31 +10,34 @@ export class UsersService {
   constructor(
     @InjectRepository(Category)
     private categoriesRepository: Repository<Category>,
-    @InjectRepository(User) private usersRepository: Repository<User>,
+    @InjectRepository(User)
+    private usersRepository: Repository<User>,
   ) {}
 
   async create(createUserDto: CreateUserDto) {
-    const user = new User();
-    user.username = createUserDto.username;
-    user.password = createUserDto.password;
+    const newUser = new User();
+    newUser.username = createUserDto.username;
+    newUser.password = createUserDto.password;
 
-    const savedUser = await this.usersRepository.save(user);
+    const createdUser = await this.usersRepository.save(newUser);
 
-    const category = new Category();
-    category.name = 'Others';
-    category.user = user;
-    await this.categoriesRepository.save(category);
+    const newCategory = new Category();
+    newCategory.name = 'Others';
+    newCategory.user = newUser;
+    await this.categoriesRepository.save(newCategory);
 
-    return savedUser;
+    return createdUser;
   }
 
   async findById(id: number) {
-    const user = await this.usersRepository.findOne({ where: { id } });
-    return user;
+    const foundUser = await this.usersRepository.findOne({ where: { id } });
+    return foundUser;
   }
 
   async findByUsername(username: string) {
-    const user = await this.usersRepository.findOne({ where: { username } });
-    return user;
+    const foundUser = await this.usersRepository.findOne({
+      where: { username },
+    });
+    return foundUser;
   }
 }

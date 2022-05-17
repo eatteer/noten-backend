@@ -3,12 +3,12 @@ import {
   Get,
   Post,
   Body,
-  Patch,
   Param,
   Delete,
   Request,
   UseGuards,
   Query,
+  Put,
 } from '@nestjs/common';
 import { NotesService } from './notes.service';
 import { CreateNoteDto } from './dto/create-note.dto';
@@ -21,35 +21,59 @@ export class NotesController {
 
   @UseGuards(AuthGuard('jwt'))
   @Post()
-  create(@Request() req, @Body() createNoteDto: CreateNoteDto) {
-    const userId = req.user.id;
-    return this.notesService.create(userId, createNoteDto);
+  async create(@Request() req, @Body() createNoteDto: CreateNoteDto) {
+    const userId = req.user.id as number;
+    const createdNote = await this.notesService.create(userId, createNoteDto);
+    return createdNote;
   }
 
   @UseGuards(AuthGuard('jwt'))
   @Get()
-  async findAll(@Query('categoryId') categoryId: number, @Request() req) {
-    const userId = req.user.id;
+  async findAll(
+    @Query('categoryId') categoryId: number,
+    @Query('keyword') keyword: string,
+    @Request() req,
+  ) {
+    const userId = req.user.id as number;
     if (categoryId) {
-      const notes = this.notesService.findManyByCategory(userId, categoryId);
-      return notes;
+      const foundNotes = await this.notesService.findManyByCategory(
+        userId,
+        categoryId,
+      );
+      return foundNotes;
     }
-    const notes = await this.notesService.findAll(userId);
-    return notes;
+    if (keyword) {
+      const foundNotes = await this.notesService.findByKeyword(userId, keyword);
+      return foundNotes;
+    }
+    const foundNotes = await this.notesService.findAll(userId);
+    return foundNotes;
   }
 
   @Get(':id')
-  findOne(@Param('id') id: string) {
+  findOne(@Param('id') id: number) {
     return this.notesService.findOne(+id);
   }
 
-  @Patch(':id')
-  update(@Param('id') id: string, @Body() updateNoteDto: UpdateNoteDto) {
-    return this.notesService.update(+id, updateNoteDto);
+  @UseGuards(AuthGuard('jwt'))
+  @Put(':id')
+  async update(
+    @Param('id') id: number,
+    @Request() req,
+    @Body() updateNoteDto: UpdateNoteDto,
+  ) {
+    const userId = req.user.id as number;
+    const updatedNote = await this.notesService.update(
+      userId,
+      +id,
+      updateNoteDto,
+    );
+    return updatedNote;
   }
 
   @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.notesService.remove(+id);
+  remove(@Param('id') id: number) {
+    const removedNote = this.notesService.remove(+id);
+    return removedNote;
   }
 }

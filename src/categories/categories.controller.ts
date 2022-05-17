@@ -1,10 +1,10 @@
 import {
   Body,
   Controller,
+  Delete,
   Get,
   Param,
   Post,
-  Query,
   Request,
   UseGuards,
 } from '@nestjs/common';
@@ -25,6 +25,17 @@ export class CategoriesController {
       createCategoryDto,
     );
     return category;
+  }
+
+  @UseGuards(AuthGuard('jwt'))
+  @Delete(':id')
+  async remove(@Param('id') categoryId: number, @Request() req) {
+    const userId = req.user.id as number;
+    const removedCategory = await this.categoriesService.remove(
+      userId,
+      categoryId,
+    );
+    return removedCategory;
   }
 
   @UseGuards(AuthGuard('jwt'))
