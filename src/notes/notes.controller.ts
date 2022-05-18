@@ -50,10 +50,10 @@ export class NotesController {
     return foundNotes;
   }
 
-  @Get(':id')
+  /* @Get(':id')
   findOne(@Param('id') id: number) {
     return this.notesService.findOne(+id);
-  }
+  } */
 
   @UseGuards(AuthGuard('jwt'))
   @Put(':id')
@@ -71,6 +71,7 @@ export class NotesController {
     return updatedNote;
   }
 
+  @UseGuards(AuthGuard('jwt'))
   @Delete(':id')
   remove(@Param('id') id: number) {
     const removedNote = this.notesService.remove(+id);

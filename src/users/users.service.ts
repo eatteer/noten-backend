@@ -13,12 +13,12 @@ export class UsersService {
     private categoriesRepository: Repository<Category>,
     @InjectRepository(User)
     private usersRepository: Repository<User>,
-  ) {}
+  ) { }
 
   async create(createUserDto: CreateUserDto) {
     const saltOrRounds = 10;
     const hash = await bcrypt.hash(createUserDto.password, saltOrRounds);
-    
+
     const newUser = new User();
     newUser.username = createUserDto.username;
     newUser.password = hash;
@@ -40,8 +40,13 @@ export class UsersService {
 
   async findByUsername(username: string) {
     const foundUser = await this.usersRepository.findOne({
-      where: { username },
+      where: { username }, withDeleted: true
     });
+    return foundUser;
+  }
+
+  async removeById(id: number) {
+    const foundUser = await this.usersRepository.softRemove({ id });
     return foundUser;
   }
 }
