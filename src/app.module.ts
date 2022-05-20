@@ -13,10 +13,10 @@ import { NotesModule } from './notes/notes.module';
     CategoriesModule,
     TypeOrmModule.forRoot({
       type: 'mysql',
-      host: 'localhost',
+      host: 'development-instance.mysql.database.azure.com',
       port: 3306,
-      username: 'root',
-      password: 'admin',
+      username: 'dbadmin',
+      password: '$0password',
       database: 'noten',
       entities: ['dist/**/*.entity{.ts,.js}'],
       synchronize: true,

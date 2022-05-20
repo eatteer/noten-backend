@@ -29,6 +29,7 @@ export class CategoriesService {
     const foundCategories = this.categoriesRepository
       .createQueryBuilder('category')
       .where('category.userId = :userId', { userId })
+      .orderBy('category.id', 'ASC')
       .getMany();
     return foundCategories;
   }

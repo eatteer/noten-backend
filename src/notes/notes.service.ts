@@ -47,6 +47,7 @@ export class NotesService {
       .where('note.userId = :userId', {
         userId,
       })
+      .orderBy('note.createdAt', 'DESC')
       .getMany();
     return foundNotes;
   }
